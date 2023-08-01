@@ -26,7 +26,7 @@ class Eta(nn.Module):
       return result
 
 
-opset_version = 18
+opset_version = 17
 
 
 def onnx_export(model, args, **kwds):
