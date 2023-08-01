@@ -133,52 +133,51 @@ _C.LOCAL_RANK = 0
 
 
 def _update_config_from_file(config, cfg_file):
-    config.defrost()
-    with open(cfg_file, 'r') as f:
-        yaml_cfg = yaml.load(f, Loader=yaml.FullLoader)
+  config.defrost()
+  with open(cfg_file, 'r') as f:
+    yaml_cfg = yaml.load(f, Loader=yaml.FullLoader)
 
-    for cfg in yaml_cfg.setdefault('BASE', ['']):
-        if cfg:
-            _update_config_from_file(
-                config, os.path.join(os.path.dirname(cfg_file), cfg)
-            )
-    print('=> merge config from {}'.format(cfg_file))
-    config.merge_from_file(cfg_file)
-    config.freeze()
+  for cfg in yaml_cfg.setdefault('BASE', ['']):
+    if cfg:
+      _update_config_from_file(config,
+                               os.path.join(os.path.dirname(cfg_file), cfg))
+  print('=> merge config from {}'.format(cfg_file))
+  config.merge_from_file(cfg_file)
+  config.freeze()
 
 
 def update_config(config, args):
-    _update_config_from_file(config, args.cfg)
+  _update_config_from_file(config, args.cfg)
 
-    config.defrost()
-    if args.opts:
-        config.merge_from_list(args.opts)
+  config.defrost()
+  if args.opts:
+    config.merge_from_list(args.opts)
 
-    # merge from specific arguments
-    if args.data_path:
-        config.DATA.DATA_PATH = args.data_path
-    if args.resume:
-        config.MODEL.RESUME = args.resume
-    if args.amp:
-        config.AMP = args.amp
-    if args.output:
-        config.OUTPUT = args.output
-    if args.tag:
-        config.TAG = args.tag
-    if args.eval:
-        config.EVAL_MODE = True
+  # merge from specific arguments
+  if args.data_path:
+    config.DATA.DATA_PATH = args.data_path
+  if args.resume:
+    config.MODEL.RESUME = args.resume
+  if args.amp:
+    config.AMP = args.amp
+  if args.output:
+    config.OUTPUT = args.output
+  if args.tag:
+    config.TAG = args.tag
+  if args.eval:
+    config.EVAL_MODE = True
 
-    # output folder
-    config.OUTPUT = os.path.join(config.OUTPUT, config.MODEL.NAME, config.TAG)
+  # output folder
+  config.OUTPUT = os.path.join(config.OUTPUT, config.MODEL.NAME, config.TAG)
 
-    config.freeze()
+  config.freeze()
 
 
 def get_config(args):
-    """Get a yacs CfgNode object with default values."""
-    # Return a clone so that the defaults will not be altered
-    # This is for the "local variable" use pattern
-    config = _C.clone()
-    update_config(config, args)
+  """Get a yacs CfgNode object with default values."""
+  # Return a clone so that the defaults will not be altered
+  # This is for the "local variable" use pattern
+  config = _C.clone()
+  update_config(config, args)
 
-    return config
+  return config
