@@ -2,7 +2,7 @@
 
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from tqdm import tqdm
 import torch
 import numpy as np
@@ -19,7 +19,7 @@ import nni
 from nni.utils import merge_parameter
 
 opt = option.init()
-device = torch.device("cuda:0")
+device = torch.device("mps")
 
 
 def adjust_learning_rate(params, optimizer, epoch):
