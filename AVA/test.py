@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import os
 import torch
+from os.path import join
 from PIL import Image
 from models.dat import DAT
 import yaml
@@ -25,8 +27,8 @@ IMAGE_NET_STD = [0.229, 0.224, 0.225]
 normalize = transforms.Normalize(mean=IMAGE_NET_MEAN, std=IMAGE_NET_STD)
 transform = transforms.Compose([transforms.ToTensor(), normalize])
 
-ck = torch.load('./AVA_AOT_vacc_0.8259_srcc_0.7596_vlcc_0.7710.pth',
-                map_location=torch.device('mps'))
+model_name = 'AVA_AOT_vacc_0.8259_srcc_0.7596_vlcc_0.7710.pth'
+ck = torch.load(model_name, map_location=torch.device('mps'))
 
 with open('./configs/dat_base.yaml') as f:
   conf = yaml.load(f, Loader=yaml.FullLoader)['MODEL']['DAT']
@@ -37,15 +39,34 @@ model.eval()
 device = torch.device("cpu")
 model.to(device)
 
-for i in range(1, 8):
-  img = Image.open(f'jpg/{i}.jpg').resize((224, 224))
-  img = transform(img)
-  # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
-  img = img.unsqueeze(0)
-  img = img.to(device)
 
-  with torch.no_grad():
-    pred, _, _ = model(img)
+def jpg_iter(root):
+  for root, dirs, files in os.walk(join('./jpg', root)):
+    # 遍历当前目录下所有文件
+    for filename in files:
+      # 检查文件名是否以'.jpg'结尾
+      if filename.endswith('.jpg'):
+        # 拼接完整路径
+        jpg_path = os.path.join(root, filename)
+        yield jpg_path
 
-  pred = get_score(pred)
-  print(i, pred)
+
+def score_dir(root):
+  n = 0
+  for i in jpg_iter(root):
+    img = Image.open(i).resize((224, 224))
+    img = transform(img)
+    # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
+    img = img.unsqueeze(0)
+    img = img.to(device)
+
+    with torch.no_grad():
+      pred, _, _ = model(img)
+
+    pred = get_score(pred)
+    print(i, pred)
+    n += pred
+  return n
+
+
+print(model_name + '\n' + str(score_dir('good') - score_dir('bad')))
