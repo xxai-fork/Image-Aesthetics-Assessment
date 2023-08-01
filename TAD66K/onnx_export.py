@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import onnx
+from onnxsim import simplify
 import torch
 from os import makedirs
 from os.path import dirname
@@ -28,22 +30,22 @@ class Eta(nn.Module):
 
 opset_version = 17
 
+onnx_fp = 'onnx/eta/tad66k.onnx'
+makedirs(dirname(onnx_fp))
+
 
 def onnx_export(model, args, **kwds):
-  fp = 'onnx/eta/tad66k.onnx'
-  makedirs(dirname(fp))
 
   torch.onnx.export(
       model,
       args,
-      fp,
+      onnx_fp,
       export_params=True,
       # verbose=True,
       opset_version=opset_version,
       do_constant_folding=False,
       output_names=['output'],
       **kwds)
-  print(fp, "DONE\n")
 
 
 MODEL = load_model("TAD66K_AOT_vacc_0.6882_srcc_0.5171_vlcc_0.5460.pth")
@@ -61,3 +63,9 @@ onnx_export(ETA,
             dynamic_axes={'input': {
                 0: 'batch'
             }})
+
+onnx_model = onnx.load(onnx_fp)  # load onnx model
+model_simp, check = simplify(onnx_model)
+print(check)
+onnx.save(model_simp, 'simplify.' + onnx_fp)
+print(onnx_fp, "DONE\n")

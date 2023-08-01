@@ -1,3 +1,4 @@
+onnx-simplifier
 onnx
 fire
 yacs
