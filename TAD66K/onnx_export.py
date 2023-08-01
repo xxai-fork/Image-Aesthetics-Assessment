@@ -20,8 +20,9 @@ class Eta(nn.Module):
     with torch.no_grad():
       img = normalize(img)
       img = img.to(DEVICE)
-      result = self.model(img)
-      print(result)
+      result, _, _ = self.model(img)
+      result = result.squeeze()
+      # print(result)
       return result
 
 
@@ -51,7 +52,10 @@ MODEL.to(DEVICE)
 img = transform(Image.open('../jpg/good/1.jpg').resize((224, 224)))
 img = img.unsqueeze(0).to(DEVICE)
 
-onnx_export(MODEL,
+ETA = Eta()
+
+# print(ETA.forward(img))
+onnx_export(ETA,
             img,
             input_names=['input'],
             dynamic_axes={'input': {
