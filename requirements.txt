@@ -1,5 +1,5 @@
+git+https://github.com/microsoft/nni.git
 pandas
-nni
 requests
 torchvision
 numpy
