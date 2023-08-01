@@ -8,6 +8,7 @@ from models.dat import DAT
 import yaml
 from torchvision import transforms
 import numpy as np
+from fire import Fire
 
 
 def get_score(y_pred):
@@ -27,21 +28,24 @@ IMAGE_NET_STD = [0.229, 0.224, 0.225]
 normalize = transforms.Normalize(mean=IMAGE_NET_MEAN, std=IMAGE_NET_STD)
 transform = transforms.Compose([transforms.ToTensor(), normalize])
 
-model_name = 'AVA_AOT_vacc_0.8259_srcc_0.7596_vlcc_0.7710.pth'
-ck = torch.load(model_name, map_location=torch.device('mps'))
-
-with open('./configs/dat_base.yaml') as f:
-  conf = yaml.load(f, Loader=yaml.FullLoader)['MODEL']['DAT']
-
-model = DAT(**conf)
-model.load_state_dict(ck)
-model.eval()
 device = torch.device("cpu")
-model.to(device)
+
+
+def load_model(model_name):
+  ck = torch.load(model_name, map_location=torch.device('mps'))
+
+  with open('./configs/dat_base.yaml') as f:
+    conf = yaml.load(f, Loader=yaml.FullLoader)['MODEL']['DAT']
+
+  model = DAT(**conf)
+  model.load_state_dict(ck)
+  model.eval()
+  model.to(device)
+  return model
 
 
 def jpg_iter(root):
-  for root, dirs, files in os.walk(join('./jpg', root)):
+  for root, dirs, files in os.walk(join('../jpg', root)):
     # 遍历当前目录下所有文件
     for filename in files:
       # 检查文件名是否以'.jpg'结尾
@@ -51,7 +55,7 @@ def jpg_iter(root):
         yield jpg_path
 
 
-def score_dir(root):
+def score_dir(root, model):
   n = 0
   for i in jpg_iter(root):
     img = Image.open(i).resize((224, 224))
@@ -69,4 +73,8 @@ def score_dir(root):
   return n
 
 
-print(model_name + '\n' + str(score_dir('good') - score_dir('bad')))
+@Fire
+def main(model_name):
+  model = load_model(model_name)
+  print(model_name + '\n' +
+        str(score_dir('good', model) - score_dir('bad', model)))
