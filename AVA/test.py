@@ -76,5 +76,7 @@ def score_dir(root, model):
 @Fire
 def main(model_name):
   model = load_model(model_name)
-  print(model_name + '\n' +
-        str(score_dir('good', model) - score_dir('bad', model)))
+  good = score_dir('good', model)
+  bad = score_dir('bad', model)
+  print(model_name + '\n' + 'DIFF %.2f%%' % (100 * (good - bad) /
+                                             (good + bad)))
