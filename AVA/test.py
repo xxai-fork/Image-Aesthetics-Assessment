@@ -37,7 +37,7 @@ model.eval()
 device = torch.device("cpu")
 model.to(device)
 
-for i in range(1, 7):
+for i in range(1, 8):
   img = Image.open(f'jpg/{i}.jpg').resize((224, 224))
   img = transform(img)
   # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
