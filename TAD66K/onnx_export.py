@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-import onnx
-from onnxsim import simplify
 import torch
 from os import makedirs
-from os.path import dirname, basename, join
+from os.path import dirname
 from PIL import Image
 import torch.nn as nn
 from load import load_model, transform, normalize
@@ -64,8 +62,8 @@ onnx_export(ETA,
                 0: 'batch'
             }})
 
-onnx_model = onnx.load(onnx_fp)  # load onnx model
-model_simp, check = simplify(onnx_model)
-print(check)
-onnx.save(model_simp, join(dirname(onnx_fp), 'simplify.' + basename(onnx_fp)))
-print(onnx_fp, "DONE\n")
+# onnx_model = onnx.load(onnx_fp)  # load onnx model
+# model_simp, check = simplify(onnx_model)
+# print(check)
+# onnx.save(model_simp, join(dirname(onnx_fp), 'simplify.' + basename(onnx_fp)))
+# print(onnx_fp, "DONE\n")
