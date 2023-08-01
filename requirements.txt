@@ -1,3 +1,4 @@
+onnx
 fire
 yacs
 einops
