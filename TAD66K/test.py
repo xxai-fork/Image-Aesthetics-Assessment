@@ -60,13 +60,13 @@ def main(model_name):
   model = load_model(model_name)
 
   def _run(img):
-    run(model, img)
+    return run(model, img)
 
   for parse in [normalize, empty]:
     print('#', parse)
 
-    good = score_dir('good', _run, parse)
     bad = score_dir('bad', _run, parse)
+    good = score_dir('good', _run, parse)
     li = li_normalize(good + bad)
 
     len_good = len(good)
