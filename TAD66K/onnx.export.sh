@@ -10,4 +10,4 @@ cd onnx/eta
 onnx=tad66k.onnx
 mod=onnxoptimizer
 python -m $mod $onnx $mod.$onnx
-mv $mod.$onnx $onnx
+# mv $mod.$onnx $onnx
