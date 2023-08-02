@@ -6,8 +6,8 @@ set -ex
 
 rm -rf ./onnx
 ./onnx_export.py
-cd onnx
-onnx=eta.tad66k.onnx
-mod=onnxoptimizer
-python -m $mod $onnx $mod.$onnx
+# cd onnx
+# onnx=eta.tad66k.onnx
+# mod=onnxoptimizer
+# python -m $mod $onnx $mod.$onnx
 # mv $mod.$onnx $onnx
