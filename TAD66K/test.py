@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from load import load_model, transform, device, normalize
+from load import load_model, transform, device
 import os
 import numpy as np
 
@@ -32,7 +32,7 @@ def score_dir(root, model):
 
     # img = torch.nn.functional.interpolate(img, size=224)
     with torch.no_grad():
-      pred, _, _ = model(normalize(img))
+      pred, _, _ = model(img)
 
     pred = pred.data.cpu().numpy()[0][0]
     print(i, pred)

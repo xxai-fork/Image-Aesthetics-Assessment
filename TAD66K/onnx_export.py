@@ -5,7 +5,7 @@ from os import makedirs
 from os.path import dirname
 from PIL import Image
 import torch.nn as nn
-from load import load_model, transform, normalize
+from load import load_model, transform
 
 DEVICE = torch.device("cpu")
 
@@ -18,7 +18,6 @@ class Eta(nn.Module):
 
   def forward(self, img):
     with torch.no_grad():
-      img = normalize(img)
       img = img.to(DEVICE)
       result, _, _ = self.model(img)
       result = result.squeeze()
