@@ -27,7 +27,8 @@ def get_score(y_pred):
 IMAGE_NET_MEAN = [0.485, 0.456, 0.406]
 IMAGE_NET_STD = [0.229, 0.224, 0.225]
 normalize = transforms.Normalize(mean=IMAGE_NET_MEAN, std=IMAGE_NET_STD)
-transform = transforms.Compose([transforms.ToTensor(), normalize])
+transform = transforms.Compose([transforms.ToTensor()])
+# transform = transforms.Compose([transforms.ToTensor(), normalize])
 
 device = torch.device("cpu")
 
