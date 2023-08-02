@@ -2,6 +2,8 @@
 
 from load import load_model, transform, device, normalize
 import os
+import numpy as np
+
 from os.path import join
 from PIL import Image
 import torch
@@ -19,7 +21,7 @@ def jpg_iter(root):
 
 
 def score_dir(root, model):
-  n = 0
+  r = []
   for i in jpg_iter(root):
     img = Image.open(i)
     img = img.resize((224, 224))
@@ -34,16 +36,24 @@ def score_dir(root, model):
 
     pred = pred.data.cpu().numpy()[0][0]
     print(i, pred)
-    n += pred
-  return n
+    r.append(pred)
+  return r
+
+
+def li_normalize(arr):
+  arr_min = np.min(arr)
+  arr_max = np.max(arr)
+  return (arr - arr_min) / (arr_max - arr_min)
 
 
 def main(model_name):
   model = load_model(model_name)
   good = score_dir('good', model)
   bad = score_dir('bad', model)
-  print(model_name + '\n' + 'DIFF %.2f%%' % (100 * (good - bad) /
-                                             (good + bad)))
+  li = li_normalize(good + bad)
+
+  diff = (sum(li[0:5]) - sum(li[5:])) / sum(li)
+  print(model_name + '\n' + 'DIFF %.2f%%' % (100 * diff))
 
 
 if __name__ == "__main__":

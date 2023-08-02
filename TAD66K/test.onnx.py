@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import onnxruntime
+from test import score_dir
 
 options = onnxruntime.SessionOptions()
 
@@ -21,8 +22,13 @@ def onnx_load(fp):
 
 
 sess = onnx_load('./onnx/eta/tad66k.onnx')
-# sess = onnx_load('./onnx/eta/onnxoptimizer.tad66k.onnx')
-print(sess.get_inputs())
+
+
+def run(img):
+  sess.run(None, {'input': img})
+
+
+score_dir('../jpg', run)
 
 if __name__ == "__main__":
   # main()
