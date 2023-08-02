@@ -27,8 +27,7 @@ def get_score(y_pred):
 IMAGE_NET_MEAN = [0.485, 0.456, 0.406]
 IMAGE_NET_STD = [0.229, 0.224, 0.225]
 normalize = transforms.Normalize(mean=IMAGE_NET_MEAN, std=IMAGE_NET_STD)
-transform = transforms.Compose([transforms.ToTensor(), normalize])
-# transform = transforms.Compose([transforms.ToTensor()])
+transform = transforms.Compose([transforms.ToTensor()])
 
 device = torch.device("cpu")
 
@@ -57,14 +56,14 @@ def jpg_iter(root):
         yield jpg_path
 
 
-def score_dir(root, model):
+def score_dir(root, model, parse):
   r = []
   for i in jpg_iter(root):
     img = Image.open(i).resize((224, 224))
-    img = transform(img)
     # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
+    img = transform(img)
+    img = parse(img)
     img = img.unsqueeze(0)
-    img = img.to(device)
 
     with torch.no_grad():
       pred, _, _ = model(img)
@@ -81,13 +80,19 @@ def li_normalize(arr):
   return (arr - arr_min) / (arr_max - arr_min)
 
 
+def empty(i):
+  return i
+
+
 @Fire
 def main(model_name):
   model = load_model(model_name)
-  good = score_dir('good', model)
-  bad = score_dir('bad', model)
-  li = li_normalize(good + bad)
+  for parse in [normalize, empty]:
+    print('#', parse)
+    good = score_dir('good', model, parse)
+    bad = score_dir('bad', model, parse)
+    li = li_normalize(good + bad)
 
-  len_good = len(good)
-  diff = mean(li[0:len_good]) / mean(li[len_good:])
-  print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))
+    len_good = len(good)
+    diff = mean(li[0:len_good]) / mean(li[len_good:])
+    print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))

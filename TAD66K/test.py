@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from load import load_model, transform, device
+from load import load_model, transform, device, normalize
 import os
 import numpy as np
 from numpy import mean
@@ -20,16 +20,16 @@ def jpg_iter(root):
         yield jpg_path
 
 
-def score_dir(root, model):
+def score_dir(root, model, parse):
   r = []
   for i in jpg_iter(root):
     img = Image.open(i)
     img = img.resize((224, 224))
-    img = transform(img)
     # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
-    img = img.unsqueeze(0)
+    img = transform(img)
     img = img.to(device)
-    # img = normalize(img)
+    img = parse(img)
+    img = img.unsqueeze(0)
 
     # img = torch.nn.functional.interpolate(img, size=224)
     with torch.no_grad():
@@ -47,15 +47,22 @@ def li_normalize(arr):
   return (arr - arr_min) / (arr_max - arr_min)
 
 
+def empty(i):
+  return i
+
+
 def main(model_name):
   model = load_model(model_name)
-  good = score_dir('good', model)
-  bad = score_dir('bad', model)
-  li = li_normalize(good + bad)
+  for parse in [normalize, empty]:
+    print('#', parse)
 
-  len_good = len(good)
-  diff = mean(li[0:len_good]) / mean(li[len_good:])
-  print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))
+    good = score_dir('good', model, parse)
+    bad = score_dir('bad', model, parse)
+    li = li_normalize(good + bad)
+
+    len_good = len(good)
+    diff = mean(li[0:len_good]) / mean(li[len_good:])
+    print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))
 
 
 if __name__ == "__main__":
