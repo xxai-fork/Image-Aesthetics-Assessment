@@ -3,7 +3,7 @@
 from load import load_model, transform, device
 import os
 import numpy as np
-
+from numpy import mean
 from os.path import join
 from PIL import Image
 import torch
@@ -52,7 +52,8 @@ def main(model_name):
   bad = score_dir('bad', model)
   li = li_normalize(good + bad)
 
-  diff = (sum(li[0:5]) - sum(li[5:])) / sum(li)
+  len_good = len(good)
+  diff = mean(li[0:len_good]) / mean(li[len_good:])
   print(model_name + '\n' + 'DIFF %.2f%%' % (100 * diff))
 
 
