@@ -56,6 +56,16 @@ def empty(i):
   return i
 
 
+def diff(_run, parse):
+  bad = score_dir('bad', _run, parse)
+  good = score_dir('good', _run, parse)
+  li = li_normalize(good + bad)
+
+  len_good = len(good)
+  n = mean(li[0:len_good]) / mean(li[len_good:])
+  print('好图平均分 / 差图平均分  %.2f%%' % (100 * n))
+
+
 def main(model_name):
   model = load_model(model_name)
 
@@ -64,14 +74,7 @@ def main(model_name):
 
   for parse in [normalize, empty]:
     print('#', parse)
-
-    bad = score_dir('bad', _run, parse)
-    good = score_dir('good', _run, parse)
-    li = li_normalize(good + bad)
-
-    len_good = len(good)
-    diff = mean(li[0:len_good]) / mean(li[len_good:])
-    print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))
+    diff(_run, parse)
 
 
 if __name__ == "__main__":

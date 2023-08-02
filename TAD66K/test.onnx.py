@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import onnxruntime
-from test import score_dir
+from test import diff
 
 options = onnxruntime.SessionOptions()
 
@@ -22,6 +22,7 @@ def onnx_load(fp):
 
 
 sess = onnx_load('./onnx/eta.tad66k.onnx')
+# sess = onnx_load('./onnx/onnxoptimizer.eta.tad66k.onnx')
 
 
 def run(img):
@@ -32,7 +33,7 @@ def to_numpy(i):
   return i.numpy()
 
 
-score_dir('', run, to_numpy)
+diff(run, to_numpy)
 
 if __name__ == "__main__":
   # main()
