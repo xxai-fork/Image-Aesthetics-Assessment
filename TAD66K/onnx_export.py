@@ -6,20 +6,8 @@ from os.path import dirname
 from PIL import Image
 import torch.nn as nn
 from load import load_model, transform
-import numpy as np
 
 DEVICE = torch.device("cpu")
-
-
-def get_score(y_pred):
-  w = torch.from_numpy(np.linspace(1, 10, 10))
-  w = w.type(torch.FloatTensor)
-  w = w.to(DEVICE)
-
-  w_batch = w.repeat(y_pred.size(0), 1)
-
-  score = (y_pred * w_batch).sum(dim=1)
-  return score
 
 
 class Eta(nn.Module):
@@ -33,7 +21,7 @@ class Eta(nn.Module):
       img = img.to(DEVICE)
       # img = normalize(img)
       result, _, _ = self.model(img)
-      result = get_score(result)
+      result = result.flatten()
       # print(result)
       return result
 
