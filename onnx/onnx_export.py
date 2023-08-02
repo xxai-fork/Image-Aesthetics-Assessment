@@ -45,7 +45,7 @@ def onnx_export(model, args, **kwds):
       **kwds)
 
 
-MODEL = load_model("TAD66K_AOT_vacc_0.6882_srcc_0.5171_vlcc_0.5460.pth")
+MODEL = load_model("../AVA/AVA_AOT_vacc_0.8259_srcc_0.7596_vlcc_0.7710.pth")
 MODEL.to(DEVICE)
 
 img = transform(Image.open('../jpg/good/1.jpg').resize((224, 224)))
