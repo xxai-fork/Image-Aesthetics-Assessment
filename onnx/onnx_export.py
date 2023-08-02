@@ -27,7 +27,7 @@ class Eta(nn.Module):
 
 opset_version = 17
 
-onnx_fp = 'onnx/eta/tad66k.onnx'
+onnx_fp = 'onnx/eta.onnx'
 makedirs(dirname(onnx_fp))
 
 
