@@ -5,7 +5,7 @@ from os import makedirs
 from os.path import dirname
 from PIL import Image
 import torch.nn as nn
-from load import load_model, transform, normalize
+from load import load_model, transform
 import numpy as np
 
 DEVICE = torch.device("cpu")
@@ -31,7 +31,7 @@ class Eta(nn.Module):
   def forward(self, img):
     with torch.no_grad():
       img = img.to(DEVICE)
-      img = normalize(img)
+      # img = normalize(img)
       result, _, _ = self.model(img)
       result = get_score(result)
       # print(result)
