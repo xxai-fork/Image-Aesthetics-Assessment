@@ -21,14 +21,18 @@ def onnx_load(fp):
   return sess
 
 
-sess = onnx_load('./onnx/eta/tad66k.onnx')
+sess = onnx_load('./onnx/eta.tad66k.onnx')
 
 
 def run(img):
-  sess.run(None, {'input': img})
+  return sess.run(None, {'input': img})[0]
 
 
-score_dir('../jpg', run)
+def to_numpy(i):
+  return i.numpy()
+
+
+score_dir('', run, to_numpy)
 
 if __name__ == "__main__":
   # main()

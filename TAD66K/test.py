@@ -4,13 +4,15 @@ from load import load_model, transform, device, normalize
 import os
 import numpy as np
 from numpy import mean
-from os.path import join
 from PIL import Image
 import torch
+from os.path import abspath, dirname, join
+
+ROOT = dirname(dirname(abspath(__file__)))
 
 
 def jpg_iter(root):
-  for root, dirs, files in os.walk(join('../jpg', root)):
+  for root, dirs, files in os.walk(join(ROOT, 'jpg', root)):
     # 遍历当前目录下所有文件
     for filename in files:
       # 检查文件名是否以'.jpg'结尾
@@ -18,6 +20,13 @@ def jpg_iter(root):
         # 拼接完整路径
         jpg_path = os.path.join(root, filename)
         yield jpg_path
+
+
+def run(model, img):
+  with torch.no_grad():
+    pred, _, _ = model(img)
+  pred = pred.data.cpu().numpy()[0][0]
+  return pred
 
 
 def score_dir(root, model, parse):
@@ -28,15 +37,11 @@ def score_dir(root, model, parse):
     # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
     img = transform(img)
     img = img.to(device)
-    img = parse(img)
     img = img.unsqueeze(0)
+    img = parse(img)
 
-    # img = torch.nn.functional.interpolate(img, size=224)
-    with torch.no_grad():
-      pred, _, _ = model(img)
-
-    pred = pred.data.cpu().numpy()[0][0]
-    print(i, pred)
+    pred = model(img)
+    print(i[len(ROOT) + 5:], pred)
     r.append(pred)
   return r
 
@@ -53,11 +58,15 @@ def empty(i):
 
 def main(model_name):
   model = load_model(model_name)
+
+  def _run(img):
+    run(model, img)
+
   for parse in [normalize, empty]:
     print('#', parse)
 
-    good = score_dir('good', model, parse)
-    bad = score_dir('bad', model, parse)
+    good = score_dir('good', _run, parse)
+    bad = score_dir('bad', _run, parse)
     li = li_normalize(good + bad)
 
     len_good = len(good)

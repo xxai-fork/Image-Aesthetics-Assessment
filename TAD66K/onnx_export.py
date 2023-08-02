@@ -21,9 +21,7 @@ class Eta(nn.Module):
       img = img.to(DEVICE)
       # img = normalize(img)
       result, _, _ = self.model(img)
-      result = result.flatten()
-      # print(result)
-      return result
+      return result.squeeze()
 
 
 opset_version = 17
