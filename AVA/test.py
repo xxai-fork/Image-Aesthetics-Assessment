@@ -27,8 +27,8 @@ def get_score(y_pred):
 IMAGE_NET_MEAN = [0.485, 0.456, 0.406]
 IMAGE_NET_STD = [0.229, 0.224, 0.225]
 normalize = transforms.Normalize(mean=IMAGE_NET_MEAN, std=IMAGE_NET_STD)
-# transform = transforms.Compose([transforms.ToTensor()])
 transform = transforms.Compose([transforms.ToTensor(), normalize])
+# transform = transforms.Compose([transforms.ToTensor()])
 
 device = torch.device("cpu")
 
@@ -90,4 +90,4 @@ def main(model_name):
 
   len_good = len(good)
   diff = mean(li[0:len_good]) / mean(li[len_good:])
-  print(model_name + '\n' + 'DIFF %.2f%%' % (100 * diff))
+  print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))

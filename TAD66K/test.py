@@ -29,6 +29,7 @@ def score_dir(root, model):
     # 参数是一个图片的数组， unsqueeze相当于创建一个只有一个图片的数组
     img = img.unsqueeze(0)
     img = img.to(device)
+    # img = normalize(img)
 
     # img = torch.nn.functional.interpolate(img, size=224)
     with torch.no_grad():
@@ -54,7 +55,7 @@ def main(model_name):
 
   len_good = len(good)
   diff = mean(li[0:len_good]) / mean(li[len_good:])
-  print(model_name + '\n' + 'DIFF %.2f%%' % (100 * diff))
+  print(model_name + '\n' + '好图平均分 / 差图平均分  %.2f%%' % (100 * diff))
 
 
 if __name__ == "__main__":
