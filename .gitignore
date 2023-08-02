@@ -1,3 +1,4 @@
+*.onnx
 .DS_Store
 __pycache__/
 *.pth
